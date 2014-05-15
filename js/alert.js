@@ -1,5 +1,5 @@
 /* ========================================================================
- * Bootstrap: alert.js v3.0.3
+ * Bootstrap: alert.js v3.1.1
  * http://getbootstrap.com/javascript/#alerts
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -17,6 +17,8 @@
   var Alert   = function (el) {
     $(el).on('click', dismiss, this.close)
   }
+
+  Alert.VERSION = '3.1.1'
 
   Alert.prototype.close = function (e) {
     var $this    = $(this)
@@ -42,7 +44,8 @@
     $parent.removeClass('in')
 
     function removeElement() {
-      $parent.trigger('closed.bs.alert').remove()
+      // detach from parent, fire event then clean up data
+      $parent.detach().trigger('closed.bs.alert').remove()
     }
 
     $.support.transition && $parent.hasClass('fade') ?
@@ -56,9 +59,7 @@
   // ALERT PLUGIN DEFINITION
   // =======================
 
-  var old = $.fn.alert
-
-  $.fn.alert = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this = $(this)
       var data  = $this.data('bs.alert')
@@ -68,6 +69,9 @@
     })
   }
 
+  var old = $.fn.alert
+
+  $.fn.alert             = Plugin
   $.fn.alert.Constructor = Alert
 
 

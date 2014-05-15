@@ -1,5 +1,5 @@
 /* ========================================================================
- * Bootstrap: tab.js v3.0.3
+ * Bootstrap: tab.js v3.1.1
  * http://getbootstrap.com/javascript/#tabs
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -16,6 +16,8 @@
   var Tab = function (element) {
     this.element = $(element)
   }
+
+  Tab.VERSION = '3.1.1'
 
   Tab.prototype.show = function () {
     var $this    = this.element
@@ -40,7 +42,7 @@
 
     var $target = $(selector)
 
-    this.activate($this.parent('li'), $ul)
+    this.activate($this.closest('li'), $ul)
     this.activate($target, $target.parent(), function () {
       $this.trigger({
         type: 'shown.bs.tab',
@@ -90,9 +92,7 @@
   // TAB PLUGIN DEFINITION
   // =====================
 
-  var old = $.fn.tab
-
-  $.fn.tab = function ( option ) {
+  function Plugin( option ) {
     return this.each(function () {
       var $this = $(this)
       var data  = $this.data('bs.tab')
@@ -102,6 +102,9 @@
     })
   }
 
+  var old = $.fn.tab
+
+  $.fn.tab             = Plugin
   $.fn.tab.Constructor = Tab
 
 
@@ -119,7 +122,7 @@
 
   $(document).on('click.bs.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function (e) {
     e.preventDefault()
-    $(this).tab('show')
+    Plugin.call($(this), 'show')
   })
 
 }(jQuery);

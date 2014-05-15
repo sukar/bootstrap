@@ -1,5 +1,5 @@
 /* ========================================================================
- * Bootstrap: scrollspy.js v3.0.3
+ * Bootstrap: scrollspy.js v3.1.1
  * http://getbootstrap.com/javascript/#scrollspy
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -19,7 +19,7 @@
 
     this.$element       = $(element).is('body') ? $(window) : $(element)
     this.$body          = $('body')
-    this.$scrollElement = this.$element.on('scroll.bs.scroll-spy.data-api', process)
+    this.$scrollElement = this.$element.on('scroll.bs.scrollspy', process)
     this.options        = $.extend({}, ScrollSpy.DEFAULTS, options)
     this.selector       = (this.options.target
       || ((href = $(element).attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
@@ -32,6 +32,8 @@
     this.process()
   }
 
+  ScrollSpy.VERSION  = '3.1.1'
+
   ScrollSpy.DEFAULTS = {
     offset: 10
   }
@@ -43,8 +45,10 @@
     this.targets = $([])
 
     var self     = this
-    var $targets = this.$body
+
+    this.$body
       .find(this.selector)
+      .filter(':visible')
       .map(function () {
         var $el   = $(this)
         var href  = $el.data('target') || $el.attr('href')
@@ -64,7 +68,7 @@
 
   ScrollSpy.prototype.process = function () {
     var scrollTop    = this.$scrollElement.scrollTop() + this.options.offset
-    var scrollHeight = this.$scrollElement[0].scrollHeight || this.$body[0].scrollHeight
+    var scrollHeight = this.$scrollElement[0].scrollHeight || Math.max(this.$body[0].scrollHeight, document.documentElement.scrollHeight)
     var maxScroll    = scrollHeight - this.$scrollElement.height()
     var offsets      = this.offsets
     var targets      = this.targets
@@ -115,9 +119,7 @@
   // SCROLLSPY PLUGIN DEFINITION
   // ===========================
 
-  var old = $.fn.scrollspy
-
-  $.fn.scrollspy = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this   = $(this)
       var data    = $this.data('bs.scrollspy')
@@ -128,6 +130,9 @@
     })
   }
 
+  var old = $.fn.scrollspy
+
+  $.fn.scrollspy             = Plugin
   $.fn.scrollspy.Constructor = ScrollSpy
 
 
@@ -143,10 +148,10 @@
   // SCROLLSPY DATA-API
   // ==================
 
-  $(window).on('load', function () {
+  $(window).on('load.bs.scrollspy.data-api', function () {
     $('[data-spy="scroll"]').each(function () {
       var $spy = $(this)
-      $spy.scrollspy($spy.data())
+      Plugin.call($spy, $spy.data())
     })
   })
 
